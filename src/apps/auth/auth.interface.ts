@@ -1,19 +1,25 @@
 
-export interface IRegister {
+export interface IEmail {
   email: string;
 }
 
-export interface IVerify {
+export interface ICodeId {
   id: string;
-  code: string
+  code: string;
 }
 
-export interface ISetPassword {
+export interface ICodeIdPass {
+  id: string;
+  code: string;
+  password: string;
+}
+
+export interface IPasswordId {
   id: string;
   password: string;
 }
 
-export interface ILogin {
+export interface IEmailPassword {
   email: string;
   password: string
 }
@@ -27,4 +33,9 @@ export interface ITokenUser {
   email: string;
   userId: string;
   role: string;
+}
+ 
+export interface IEmailAction {
+  email: string;
+  action: string;
 }

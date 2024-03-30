@@ -1,6 +1,6 @@
 import { generate } from "otp-generator"
 
-export const generateMagicLink = (id: string) => {
+export const generateMagicLink = (id: string, action: string) => {
   const domain = ""
   const timestampString = String(Date.now());
   const stringToInsert = generate(10, {

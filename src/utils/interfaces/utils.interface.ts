@@ -5,7 +5,7 @@ export interface ISendMail {
   html: string;
 }
 
-export interface ISendVerificationMail {
+export interface IVerificationPasswordResetnMail {
   to: string;
   magicLink: string;
 }

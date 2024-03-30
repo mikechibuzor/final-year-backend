@@ -14,6 +14,10 @@ export class AuthController implements Controller{
     this.router.post(`${this.path}/verify-email`, this.verify)
     this.router.post(`${this.path}/set-password`, this.setPassword)
     this.router.post(`${this.path}/login`, this.login)
+    this.router.post(`${this.path}/forget-password`, this.forgetPassword)
+    this.router.post(`${this.path}/reset-password`, this.resetPassword)
+    this.router.post(`${this.path}/resend-link`, this.resendLink)
+
   }
 
   private constructor () {
@@ -54,8 +58,6 @@ export class AuthController implements Controller{
     }
   }
 
-
-
   public async login(req: Request, res: Response, next: NextFunction): Promise<Response | any> {
     try {
       const { acessTokenJWT, refreshTokenJWT } = await AuthService.login(req.body);
@@ -64,4 +66,31 @@ export class AuthController implements Controller{
       next(error)
     }
   }
+
+public async forgetPassword(req: Request, res: Response, next: NextFunction): Promise<Response | any> {
+  try {
+    await AuthService.forgotPassword(req.body)
+    return res.json({message: "An email has been sent to you. Follow the link provided to reset your password"})
+  } catch (error) {
+    next(error)
+  }
+}
+
+public async resetPassword(req: Request, res: Response, next: NextFunction): Promise<Response | any> {
+  try {
+    await AuthService.resetPassword(req.body)
+    return res.json({message: "Password reset successful"})
+  } catch (error) {
+    next(error)
+  }
+}
+
+public async resendLink(req: Request, res: Response, next: NextFunction): Promise<Response | any> {
+  try {
+    await AuthService.resendLink({...req.body, action: req.query.action})
+    return res.json({message: "Email sent. Please check your inbox"})
+  } catch (error) {
+    next(error)
+  }
+}
 }

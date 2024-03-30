@@ -1,5 +1,5 @@
 import nodemailer from "nodemailer"
-import { ISendMail, ISendVerificationMail } from "./interfaces/utils.interface"
+import { ISendMail, IVerificationPasswordResetnMail } from "./interfaces/utils.interface"
 
 require('dotenv').config()
 const config = {
@@ -29,7 +29,7 @@ const send = async (params : ISendMail) => {
   }
 }
 
-export const sendVerificationMail = async (params: ISendVerificationMail) => {
+export const sendVerificationMail = async (params: IVerificationPasswordResetnMail) => {
   try {
     const html = `
     <center>
@@ -46,6 +46,27 @@ export const sendVerificationMail = async (params: ISendVerificationMail) => {
     `;
 
     await send({to: params.to, subject: "Account Verification", html});
+
+  } catch (error) {
+    throw error
+  }
+}
+
+export const sendResetPasswordMail = async (params: IVerificationPasswordResetnMail) => {
+  try {
+    const html = `
+    <center>
+    <div>
+      <h2>Hi,</h2>
+      <p>Please, click on the link below to reset your password</p>
+      <p><center>${params.magicLink}</center></div>
+      <p>Note: This link is only valid for 10 minutes</p>
+    </div>
+    <p>Please ignore if you didn't request for this</p>
+    <p>Thanks</p>
+    </center>
+    `;
+    await send({ to: params.to, subject: "Reset Password", html });
 
   } catch (error) {
     throw error
