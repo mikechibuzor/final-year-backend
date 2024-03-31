@@ -4,6 +4,7 @@ import helmet from 'helmet';
 import db from './database/models'
 import { Controller } from './utils/interfaces/controller.interface';
 import { errorHandler } from './middlewares/error.middleware';
+import { notFound } from './middlewares/notFound.middleware';
 
 export class App {
   private app: Application;
@@ -28,6 +29,7 @@ export class App {
   }
 
   private initialiseErrorHandling(): void {
+    this.app.use(notFound)
     this.app.use(errorHandler);
   }
 
