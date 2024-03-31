@@ -1,7 +1,7 @@
 import { generate } from "otp-generator"
 
-export const generateMagicLink = (id: string, action: string) => {
-  const domain = ""
+export const generateMagicLink = (id: string, type: string) => {
+  const domain = `https://web-based-past-projects-repository.netlify.app/${type == 'create-account'? 'verify-email' : 'reset-password'}`
   const timestampString = String(Date.now());
   const stringToInsert = generate(10, {
     upperCaseAlphabets: false,

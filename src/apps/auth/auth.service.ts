@@ -2,13 +2,13 @@ import db from "../../database/models"
 import { generateMagicLink } from "../../utils/code.utils"
 import { BadRequestError, UnauthenticatedError } from "../../utils/error.utils"
 import { sendResetPasswordMail, sendVerificationMail } from "../../utils/mail.utils"
-import { IEmailPassword, ILoginReturnVal, IEmail, IPasswordId, ICodeId, ICodeIdPass, IEmailAction } from "./auth.interface"
+import { IEmailPassword, ILoginReturnVal, IEmail, IPasswordId, ICodeId, ICodeIdPass, IEmailType } from "./auth.interface"
 import { compareSync } from "bcryptjs"
 import { generate } from "otp-generator"
 import { extractTokenUser, generateTokens } from "../../utils/token.util"
 const { User, Token } = db.sequelize.models
-const REGISTER = "register"
-const RESET_PASSWORD = "reset_password"
+const REGISTER = "create-account"
+const RESET_PASSWORD = "reset-password"
 export class AuthService {
   
   public static async register(params: IEmail): Promise<void> {
@@ -40,6 +40,7 @@ export class AuthService {
     try {
       const user = await User.findByPk(params.id)
       if (!user) throw new BadRequestError("User deos not exist");
+      if (!user.isVerified) throw new BadRequestError("Your account has not been verified")
       user.password = params.password
       await user.save()
     } catch (error) {
@@ -74,7 +75,7 @@ export class AuthService {
     try {
       if (!params.email) throw new BadRequestError("Email not provided")
       const user = await User.findOne({where: {email: params.email?.trim()?.toLowerCase()}})
-      if (!user) return
+      if (!user || !user.isVerified) return
       await this.sendLink(user, RESET_PASSWORD)
     } catch (error) {
       throw error
@@ -98,17 +99,29 @@ export class AuthService {
     }
   }
 
-  public static async resendLink(params: IEmailAction) {
+  public static async resendLink(params: IEmailType) {
     try {
-      if (!params.email || !params.action) throw new BadRequestError("Please provide valid input")
-      const user = User.findOne({where: {email: params.email}})
+      if (!params.email || !params.type) throw new BadRequestError("Please provide valid input")
+      const user = await User.findOne({where: {email: params.email}})
       if (!user) return
-      await this.sendLink(user, params.action)
+      if (!user.isVerified && params.type == RESET_PASSWORD) throw new BadRequestError("Password reset failed on unverified account");
+      await this.sendLink(user, params.type)
     } catch (error) {
       throw error
     }
   }
 
+  public static async deleteUser(params: IEmail) {
+    try {
+      if (!params.email) throw new BadRequestError("Provide email of user to delete")
+      const user = await User.findOne({where: {email: params.email}})
+      if (!user) return
+      await user.destroy();
+    } catch (error) {
+      console.log(error)
+      throw error
+    }
+  }
 
   private static async sendLink(user: any, action: string) {
     try {
