@@ -4,7 +4,9 @@
   "description": "",
   "main": "server.ts",
   "scripts": {
-    "start": "nodemon --exec ts-node src/server"
+    "dev": "nodemon --exec ts-node src/server",
+    "start": "node dist/server.js",
+    "build": "rm -rf dist/ && tsc"
   },
   "author": "",
   "license": "ISC",
