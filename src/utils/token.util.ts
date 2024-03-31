@@ -10,7 +10,7 @@ export const generateTokens = ({user, refreshToken}: {user: ITokenUser; refreshT
 export const decodeToken = (token: string) =>
   jwt.verify(token, process.env.JWT_SECRET || "");
 
-export const extractTokenUser = (user: ITokenUser) => {
+export const extractTokenUser = (user: any) => {
   const email = user.email;
   const role = user.role;
   const userId = user.userId;
