@@ -17,6 +17,7 @@ export class AuthController implements Controller{
     this.router.post(`${this.path}/forget-password`, this.forgetPassword)
     this.router.post(`${this.path}/reset-password`, this.resetPassword)
     this.router.post(`${this.path}/resend-link`, this.resendLink)
+    this.router.delete(`${this.path}/delete-user`, this.deleteUser)
 
   }
 
@@ -87,8 +88,17 @@ public async resetPassword(req: Request, res: Response, next: NextFunction): Pro
 
 public async resendLink(req: Request, res: Response, next: NextFunction): Promise<Response | any> {
   try {
-    await AuthService.resendLink({...req.body, action: req.query.action})
+    await AuthService.resendLink({...req.body, type: req.query.type})
     return res.json({message: "Email sent. Please check your inbox"})
+  } catch (error) {
+    next(error)
+  }
+}
+
+public async deleteUser(req: Request, res: Response, next: NextFunction): Promise<Response | any> {
+  try {
+    await AuthService.deleteUser(req.body)
+    return res.json({message: "User deleted"})
   } catch (error) {
     next(error)
   }

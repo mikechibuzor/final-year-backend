@@ -35,7 +35,7 @@ export interface ITokenUser {
   role: string;
 }
  
-export interface IEmailAction {
+export interface IEmailType {
   email: string;
-  action: string;
+  type: string;
 }
