@@ -18,7 +18,8 @@ export class AuthController implements Controller{
     this.router.post(`${this.path}/reset-password`, this.resetPassword)
     this.router.post(`${this.path}/resend-link`, this.resendLink)
     this.router.delete(`${this.path}/delete-user`, this.deleteUser)
-
+    this.router.post(`${this.path}/admin-login`, this.adminLogin)
+    this.router.post(`${this.path}/create-admin`, this.createAdmin)
   }
 
   private constructor () {
@@ -62,7 +63,7 @@ export class AuthController implements Controller{
   public async login(req: Request, res: Response, next: NextFunction): Promise<Response | any> {
     try {
       const { acessTokenJWT, refreshTokenJWT } = await AuthService.login(req.body);
-      return res.json({message: "Login successful", acessTokenJWT,refreshTokenJWT})
+      return res.json({message: "Login successful", accessToken: acessTokenJWT, refreshToken: refreshTokenJWT})
     } catch (error) {
       next(error)
     }
@@ -103,4 +104,23 @@ public async deleteUser(req: Request, res: Response, next: NextFunction): Promis
     next(error)
   }
 }
+
+public async adminLogin(req: Request, res: Response, next: NextFunction): Promise<Response | any> {
+  try {
+    const { acessTokenJWT, refreshTokenJWT } = await AuthService.adminLogin(req.body);
+    return res.json({message: "Login successful", accessToken: acessTokenJWT, refreshToken: refreshTokenJWT})
+  } catch (error) {
+    next(error)
+  }
+}
+
+public async createAdmin(req: Request, res: Response, next: NextFunction): Promise<Response | any> {
+  try {
+    await AuthService.createAdmin(req.body)
+    return res.json({message: "Admin created"})
+  } catch (error) {
+    next(error)
+  }
+}
+
 }

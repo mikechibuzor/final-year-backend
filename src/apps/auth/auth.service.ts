@@ -1,12 +1,14 @@
 import db from "../../database/models"
 import { generateMagicLink } from "../../utils/code.utils"
-import { BadRequestError, UnauthenticatedError } from "../../utils/error.utils"
+import { BadRequestError, UnauthenticatedError, UnauthorizedError } from "../../utils/error.utils"
 import { sendResetPasswordMail, sendVerificationMail } from "../../utils/mail.utils"
 import { IEmailPassword, ILoginReturnVal, IEmail, IPasswordId, ICodeId, ICodeIdPass, IEmailType } from "./auth.interface"
 import { compareSync } from "bcryptjs"
 import { generate } from "otp-generator"
+import { config } from "dotenv"
 import { extractTokenUser, generateTokens } from "../../utils/token.util"
 const { User, Token } = db.sequelize.models
+config()
 const REGISTER = "create-account"
 const RESET_PASSWORD = "reset-password"
 export class AuthService {
@@ -132,6 +134,42 @@ export class AuthService {
       if (action == REGISTER) sendVerificationMail({to: user.email, magicLink})
       else if (action == RESET_PASSWORD) sendResetPasswordMail({to: user.email, magicLink})
       console.log({id: user.id, code})
+    } catch (error) {
+      throw error
+    }
+  }
+
+  public static async createAdmin(params: {createAdminCode: string}) {
+    try {
+      if (!params.createAdminCode) throw new BadRequestError("Provide valid input")
+      if (params.createAdminCode != process.env.CREATE_ADMIN_CODE) throw new UnauthorizedError("You are not allowed to create an admin")
+      await User.create({
+        email: 'admin1@stu.ui.edu.ng',
+        password: process.env.ADMIN_CODE,
+        isVerified: true,
+        role: 'admin'
+      })
+    } catch (error) {
+      throw error
+    }
+  }
+
+  public static async adminLogin(params: {code: string}) {
+    try {
+      if (!params.code) throw new BadRequestError("Provide code")
+      const email = 'admin1@stu.ui.edu.ng';
+      const admin = await User.findOne({where: {email}})
+      if (!admin) throw new UnauthenticatedError("Authentication failed")
+      const validPassword = compareSync(params.code, admin.password);
+      if (!validPassword) throw new UnauthenticatedError("Authentication failed")
+      const refreshToken = generate()
+      const token = await Token.create({
+        refreshToken,
+        userId: admin.id
+      })
+      const tokenUser = extractTokenUser(admin);
+      const { acessTokenJWT, refreshTokenJWT } = generateTokens({ user: tokenUser, refreshToken })
+      return {acessTokenJWT, refreshTokenJWT};
     } catch (error) {
       throw error
     }
