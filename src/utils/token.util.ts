@@ -13,7 +13,7 @@ export const decodeToken = (token: string) =>
 export const extractTokenUser = (user: any) => {
   const email = user.email;
   const role = user.role;
-  const userId = user.userId;
+  const userId = user.id;
 
   return {  email, role, userId };
 };

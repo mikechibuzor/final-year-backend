@@ -11,6 +11,7 @@ const { User, Token } = db.sequelize.models
 config()
 const REGISTER = "create-account"
 const RESET_PASSWORD = "reset-password"
+
 export class AuthService {
   
   public static async register(params: IEmail): Promise<void> {

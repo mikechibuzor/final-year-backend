@@ -20,7 +20,7 @@ module.exports = (sequelize, DataTypes) => {
         },
         onDelete: "CASCADE",
       });
-      this.belongsToMany(models.Project, { through: 'Bookmarks'});
+      this.belongsToMany(models.Project, { through: 'Bookmark'});
     }
 
   }
