@@ -1,7 +1,6 @@
 import db from "../../database/models"
-import supervisor from "../../database/models/supervisor"
 import { BadRequestError, NotFoundError } from "../../utils/error.utils"
-import { uploadFile } from "../../utils/s3"
+import { deleteFile, uploadFile } from "../../utils/s3"
 import { IProjectId, IProjectDetails } from "./project.interface"
 const { Project } = db.sequelize.models
 
@@ -33,7 +32,9 @@ export class ProjectService {
       if (!params.projectId) throw new BadRequestError("Project id not provided")
       const project = await Project.findByPk(params.projectId)
       if (!project) throw new NotFoundError("Project not found")
+      const pdfUrl = project.url
       await project.destroy()
+      await deleteFile(pdfUrl)
     } catch (error) {
       throw error
     }
@@ -48,6 +49,8 @@ export class ProjectService {
       const project = await Project.findByPk(params.projectId);
       if (!project) throw new NotFoundError("Project not found")
 
+      const oldPdfURL = project.url
+
       if (params.title) project.title = params.title
       if (params.matricNo) project.matricNo = params.matricNo
       if (params.authorFirstName) project.authorFirstName = params.authorFirstName
@@ -59,7 +62,13 @@ export class ProjectService {
         const pdfURL = await uploadFile(params.projectDoc[0])
         project.url = pdfURL
       }
-      await project.save()
+      try {
+        await project.save()
+      } catch (error) {
+        if (params.projectDoc) await deleteFile(project.url)
+        throw error
+      }
+      if (params.projectDoc) await deleteFile(oldPdfURL)
       return project
     } catch (error) {
       throw error
@@ -80,7 +89,7 @@ export class ProjectService {
         supervisorId: params.supervisorId,
         url: pdfURL,
       })
-      
+
       return project
     } catch (error) {
       throw error

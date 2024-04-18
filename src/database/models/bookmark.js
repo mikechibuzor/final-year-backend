@@ -15,25 +15,17 @@ module.exports = (sequelize, DataTypes) => {
     }
   }
   Bookmark.init({
-    userId: {
-      type: DataTypes.UUID,
-      allowNull: false,
-      references: {
-        model: 'Users',
-        key: 'id',
-      }
-    },
-    projectId: {
-      type: DataTypes.UUID,
-      allowNull: false,
-      references: {
-        model: 'Projects',
-        key: 'id'
-      }
-    }
+    
   }, {
     sequelize,
     modelName: 'Bookmark',
+    indexes: [
+      {
+        name: 'unique_bookmark',
+        unique: true,
+        fields: ['userId', 'projectId']
+      }
+    ]
   });
   return Bookmark;
 };

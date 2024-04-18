@@ -11,7 +11,7 @@ export class SupervisorController implements Controller {
 
   private initializeRoutes() {
     this.router.route(`${this.path}`).get(authenticator, this.getSupervisors).post(authenticator, isAdmin, this.addSupervisor)
-    this.router.patch(`${this.path}/supervisorId`, authenticator, isAdmin, this.editSupervisor)
+    this.router.patch(`${this.path}/:supervisorId`, authenticator, isAdmin, this.editSupervisor)
   }
 
   private constructor () {

@@ -32,7 +32,7 @@ export class ProjectController implements Controller {
     try {
       const { projectDoc } = req.files as { [fieldname: string]: Express.Multer.File[] };
       const project = await ProjectService.uploadProject({ ...req.body, projectDoc });
-      return res.json({ message: "Image successfully uploaded", project })
+      return res.json({ message: "Project uploaded successfully", project })
     } catch (error) {
       next(error)
     }
@@ -67,7 +67,8 @@ export class ProjectController implements Controller {
 
   public async updateProject(req: Request, res: Response, next: NextFunction): Promise<Response | any> {
     try {
-      const project = await ProjectService.updateProject({ ...req.body, projectId: req.params.projectId })
+      const { projectDoc } = req.files as { [fieldname: string]: Express.Multer.File[] };
+      const project = await ProjectService.updateProject({ ...req.body, projectDoc, projectId: req.params.projectId })
       return res.json({ message: "Project updated successfully", project })
     } catch (error) {
       next(error)

@@ -14,9 +14,10 @@ export interface ICodeIdPass {
   password: string;
 }
 
-export interface IPasswordId {
+export interface IDetails {
   id: string;
   password: string;
+  username: string;
 }
 
 export interface IEmailPassword {
@@ -27,6 +28,9 @@ export interface IEmailPassword {
 export interface ILoginReturnVal {
   acessTokenJWT: string;
   refreshTokenJWT: string;
+  userDetails: any;
+  bookmarks: any;
+  projects: any;
 }
 
 export interface ITokenUser {

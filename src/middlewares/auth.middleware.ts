@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { UnauthenticatedError, UnauthorizedError } from "../utils/error.utils";
-import { decodeToken, extractTokenUser } from "../utils/token.util";
+import { decodeToken } from "../utils/token.util";
 
 
 export const authenticator = (req: any, res: Response, next: NextFunction) => {
@@ -15,7 +15,6 @@ export const authenticator = (req: any, res: Response, next: NextFunction) => {
       role: user.role,
       email: user.email
     }
-    console.log(req.user)
     next()
   } catch(err) {
     next(err)
