@@ -12,7 +12,7 @@ export class AuthController implements Controller{
   private initializeRoutes() {
     this.router.post(`${this.path}/register`, this.register)
     this.router.post(`${this.path}/verify-email`, this.verify)
-    this.router.post(`${this.path}/set-password`, this.setPassword)
+    this.router.patch(`${this.path}/set-details`, this.setDetails)
     this.router.post(`${this.path}/login`, this.login)
     this.router.post(`${this.path}/forget-password`, this.forgetPassword)
     this.router.post(`${this.path}/reset-password`, this.resetPassword)
@@ -51,10 +51,10 @@ export class AuthController implements Controller{
     }
   }
 
-  public async setPassword(req: Request, res: Response, next: NextFunction): Promise<Response | any> {
+  public async setDetails(req: Request, res: Response, next: NextFunction): Promise<Response | any> {
     try {
-      await AuthService.setPassword(req.body)
-      res.json({message: "Success. You can over to the login page now"})
+      await AuthService.setDetails(req.body)
+      res.json({message: "Success. You can head to the login page now"})
     } catch (error) {
       next(error)
     }
@@ -62,8 +62,8 @@ export class AuthController implements Controller{
 
   public async login(req: Request, res: Response, next: NextFunction): Promise<Response | any> {
     try {
-      const { acessTokenJWT, refreshTokenJWT } = await AuthService.login(req.body);
-      return res.json({message: "Login successful", accessToken: acessTokenJWT, refreshToken: refreshTokenJWT})
+      const { userDetails, bookmarks, projects, acessTokenJWT, refreshTokenJWT } = await AuthService.login(req.body);
+      return res.json({message: "Login successful", userDetails, bookmarks, projects, accessToken: acessTokenJWT, refreshToken: refreshTokenJWT})
     } catch (error) {
       next(error)
     }

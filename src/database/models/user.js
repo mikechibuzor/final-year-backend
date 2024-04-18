@@ -20,7 +20,11 @@ module.exports = (sequelize, DataTypes) => {
         },
         onDelete: "CASCADE",
       });
-      this.belongsToMany(models.Project, { through: 'Bookmarks'});
+      this.belongsToMany(models.Project, { 
+        through: 'Bookmark',
+        foreignKey: 'userId',
+        otherKey: 'projectId'
+      });
     }
 
   }
@@ -45,11 +49,21 @@ module.exports = (sequelize, DataTypes) => {
         notNull: {
           msg: "Try again. This time around, make sure say you drop your email address",
         },
-        isStudentEmail(value) {
-          if (value && value.split('@')[1] != "stu.ui.edu.ng")
-            throw new Error("Please provide your student email address")
-        }
+        // isStudentEmail(value) {
+        //   if (value && value.split('@')[1] != "stu.ui.edu.ng")
+        //     throw new Error("Please provide your student email address")
+        // }
       },
+    },
+    username: {
+      type: DataTypes.STRING,
+      unique: true,
+      validate: {
+        isAlphanumeric: {
+          msg: "Your username must contain only letters and digits"
+        },
+        len: [2, 20]
+      }
     },
     password: {
       type: DataTypes.STRING,

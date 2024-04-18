@@ -48,7 +48,7 @@ export class App {
   private async connectToDB() {
     //await connection.connect();
     try {
-      await db.sequelize.sync()
+      await db.sequelize.sync({alter: true})
       await db.sequelize.authenticate()
       console.log('Connected to database');
     } catch (err) {

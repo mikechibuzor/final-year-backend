@@ -2,6 +2,7 @@
 const {
   Model
 } = require('sequelize');
+
 module.exports = (sequelize, DataTypes) => {
   class Project extends Model {
     /**
@@ -11,10 +12,20 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      this.belongsToMany(models.User, { through: 'Bookmarks'});
+      this.belongsToMany(models.User, { 
+        through: 'Bookmark',
+        foreignKey: 'projectId',
+        otherKey: 'userId'
+       });
     }
   }
   Project.init({
+    id: {
+      type: DataTypes.UUID,
+      defaultValue: DataTypes.UUIDV4,
+      primaryKey: true,
+      allowNull: false
+    },
     title: {
       type: DataTypes.STRING,
       allowNull: false,
@@ -24,13 +35,16 @@ module.exports = (sequelize, DataTypes) => {
         },
       }
     },
-    description: {
+    matricNo: {
       type: DataTypes.STRING,
       allowNull: false,
       validate: {
         notEmpty: {
-          msg: "Project topic is missing"
+          msg: "Please provide matric number"
         },
+        notNull: {
+          msg: "Please provide matric number"
+        }
       }
     },
     authorFirstName: {
@@ -62,6 +76,12 @@ module.exports = (sequelize, DataTypes) => {
           msg: "Year is missing"
         },
       },
+    },
+    url: {
+      type: DataTypes.STRING,
+      validate: {
+        isUrl: true
+      }
     },
     citation: {
       type: DataTypes.STRING,

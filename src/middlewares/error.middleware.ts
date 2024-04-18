@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from "express"
 import { CustomError } from "../utils/error.utils"
 
 export const errorHandler = (err: any, req: Request, res: Response, next: NextFunction) => {
+  console.log(err)
   const errorMessages = []
   if (err.name && err.name == "SequelizeValidationError") {
     for (const error of err.errors) {

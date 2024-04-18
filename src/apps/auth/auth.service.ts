@@ -2,15 +2,16 @@ import db from "../../database/models"
 import { generateMagicLink } from "../../utils/code.utils"
 import { BadRequestError, UnauthenticatedError, UnauthorizedError } from "../../utils/error.utils"
 import { sendResetPasswordMail, sendVerificationMail } from "../../utils/mail.utils"
-import { IEmailPassword, ILoginReturnVal, IEmail, IPasswordId, ICodeId, ICodeIdPass, IEmailType } from "./auth.interface"
+import { IEmailPassword, ILoginReturnVal, IEmail, IDetails, ICodeId, ICodeIdPass, IEmailType } from "./auth.interface"
 import { compareSync } from "bcryptjs"
 import { generate } from "otp-generator"
 import { config } from "dotenv"
 import { extractTokenUser, generateTokens } from "../../utils/token.util"
-const { User, Token } = db.sequelize.models
+const { User, Token, Project } = db.sequelize.models
 config()
 const REGISTER = "create-account"
 const RESET_PASSWORD = "reset-password"
+
 export class AuthService {
   
   public static async register(params: IEmail): Promise<void> {
@@ -38,12 +39,14 @@ export class AuthService {
     }
   }
 
-  public static async setPassword(params: IPasswordId): Promise<void> {
+  public static async setDetails(params: IDetails): Promise<void> {
     try {
+      if (!params.password || !params.username) throw new BadRequestError("Please provide both username and password")
       const user = await User.findByPk(params.id)
       if (!user) throw new BadRequestError("User deos not exist");
       if (!user.isVerified) throw new BadRequestError("Your account has not been verified")
       user.password = params.password
+      user.username = params.username
       await user.save()
     } catch (error) {
       throw error
@@ -65,8 +68,15 @@ export class AuthService {
         userId: user.id
       })
       const tokenUser = extractTokenUser(user);
+      const userDetails = {
+        email: user.email,
+        username: user.username,
+        role: user.role
+      }
+      const projects = await Project.findAll();
+      const bookmarks = await user.getProjects({ joinTableAttributes: [] })
       const { acessTokenJWT, refreshTokenJWT } = generateTokens({ user: tokenUser, refreshToken })
-      return {acessTokenJWT, refreshTokenJWT};
+      return {acessTokenJWT, refreshTokenJWT, userDetails, bookmarks, projects};
     } catch (error) {
       console.log(error)
       throw error
