@@ -107,8 +107,8 @@ public async deleteUser(req: Request, res: Response, next: NextFunction): Promis
 
 public async adminLogin(req: Request, res: Response, next: NextFunction): Promise<Response | any> {
   try {
-    const { acessTokenJWT, refreshTokenJWT } = await AuthService.adminLogin(req.body);
-    return res.json({message: "Login successful", accessToken: acessTokenJWT, refreshToken: refreshTokenJWT})
+    const { acessTokenJWT, refreshTokenJWT, adminDetails } = await AuthService.adminLogin(req.body);
+    return res.json({message: "Login successful", accessToken: acessTokenJWT, refreshToken: refreshTokenJWT, userDetails: adminDetails})
   } catch (error) {
     next(error)
   }

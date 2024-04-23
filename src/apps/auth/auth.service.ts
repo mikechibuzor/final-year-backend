@@ -179,7 +179,12 @@ export class AuthService {
       })
       const tokenUser = extractTokenUser(admin);
       const { acessTokenJWT, refreshTokenJWT } = generateTokens({ user: tokenUser, refreshToken })
-      return {acessTokenJWT, refreshTokenJWT};
+      const adminDetails = {
+        email: admin.email,
+        username: admin.username,
+        role: admin.role
+      }
+      return { acessTokenJWT, refreshTokenJWT, adminDetails };
     } catch (error) {
       throw error
     }
