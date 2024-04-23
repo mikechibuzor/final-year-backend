@@ -17,7 +17,7 @@ export const authenticator = (req: any, res: Response, next: NextFunction) => {
     }
     next()
   } catch(err) {
-    next(err)
+    next(new UnauthenticatedError("Authentication failed. Please login to continue"))
   }
 
 }
